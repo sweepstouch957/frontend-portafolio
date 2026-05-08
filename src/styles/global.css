@@ -143,7 +143,7 @@ a {
 
 /* ─── Rail (Left Sticky Column) ─────────────────────────────────────── */
 .rail {
-  padding: 68px 0 16px;
+  padding: 62px 0 8px;
 }
 
 @media (min-width: 1024px) {
@@ -310,7 +310,7 @@ a {
 
 /* ─── Main Column ───────────────────────────────────────────────────── */
 .main {
-  padding: 68px 0 60px;
+  padding: 62px 0 40px;
 }
 
 @media (min-width: 1024px) {
