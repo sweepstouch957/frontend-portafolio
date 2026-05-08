@@ -65,27 +65,53 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
 /* ─── Mobile Bottom Nav ──────────────────────────────────────────────── */
 function MobileNav({ items }: { items: { id: string; label: string; icon: React.ReactNode }[] }) {
   const [active, setActive] = useState(items[0]?.id ?? '');
+  const pillRef = useRef<HTMLSpanElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const observers = items.map(({ id }) => {
       const el = document.getElementById(id);
       if (!el) return null;
       const io = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActive(id); },
-        { rootMargin: '-30% 0px -55% 0px', threshold: 0 }
+        { rootMargin: '-25% 0px -60% 0px', threshold: 0 }
       );
       io.observe(el);
       return io;
     });
     return () => observers.forEach((o) => o?.disconnect());
   }, [items]);
+
+  /* animate pill to active item */
+  useEffect(() => {
+    const nav = navRef.current;
+    const pill = pillRef.current;
+    if (!nav || !pill) return;
+    const activeEl = nav.querySelector(`[data-id="${active}"]`) as HTMLElement;
+    if (!activeEl) return;
+    const navRect = nav.getBoundingClientRect();
+    const itemRect = activeEl.getBoundingClientRect();
+    gsap.to(pill, {
+      x: itemRect.left - navRect.left,
+      width: itemRect.width,
+      duration: 0.4,
+      ease: 'power3.inOut',
+    });
+  }, [active]);
+
   return (
     <nav className="mobnav" aria-label="Mobile navigation">
-      {items.map(({ id, label, icon }) => (
-        <a key={id} href={`#${id}`} className={`mobnav-item${active === id ? ' active' : ''}`}>
-          <span className="mobnav-icon">{icon}</span>
-          <span className="mobnav-label">{label}</span>
-        </a>
-      ))}
+      <div className="mobnav-track" ref={navRef}>
+        <span className="mobnav-pill" ref={pillRef} aria-hidden="true" />
+        {items.map(({ id, icon }) => (
+          <a key={id} data-id={id} href={`#${id}`}
+            className={`mobnav-item${active === id ? ' active' : ''}`}
+            onClick={() => setActive(id)}
+          >
+            <span className="mobnav-icon">{icon}</span>
+          </a>
+        ))}
+      </div>
     </nav>
   );
 }
