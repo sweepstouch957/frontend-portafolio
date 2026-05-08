@@ -95,12 +95,14 @@ function MobileNav({ items }: { items: { id: string; label: string; icon: React.
     <nav className="mobnav" aria-label="Mobile navigation">
       <div className="mobnav-track" ref={navRef}>
         <span className="mobnav-pill" ref={pillRef} aria-hidden="true" />
-        {items.map(({ id, icon }) => (
+        {items.map(({ id, label, icon }) => (
           <a key={id} data-id={id} href={`#${id}`}
             className={`mobnav-item${active === id ? ' active' : ''}`}
             onClick={() => setActive(id)}
+            aria-label={label}
+            aria-current={active === id ? 'page' : undefined}
           >
-            <span className="mobnav-icon">{icon}</span>
+            <span className="mobnav-icon" aria-hidden="true">{icon}</span>
           </a>
         ))}
       </div>
@@ -146,12 +148,14 @@ function ThemeLangControls({
     <div className="ctl-cluster">
       <div className="ctl-seg" role="tablist" aria-label="Language">
         <button
+          role="tab"
           className={lang === 'en' ? 'on' : ''}
           onClick={() => setLang('en')}
           aria-label="English"
           aria-selected={lang === 'en'}
         >EN</button>
         <button
+          role="tab"
           className={lang === 'es' ? 'on' : ''}
           onClick={() => setLang('es')}
           aria-label="Español"

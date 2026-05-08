@@ -674,7 +674,7 @@ a {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.05em;
-  color: var(--ink-3);
+  color: var(--ink-2);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -1514,7 +1514,7 @@ a {
 .footer {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--ink-4);
+  color: var(--ink-2);
   letter-spacing: 0.06em;
   padding: 20px 0 40px;
   text-align: center;
