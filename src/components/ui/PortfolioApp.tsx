@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CONTENT, EXPERIENCE, SEED_PROJECTS, type Lang } from '../../lib/content';
 import { Icons } from './Icons';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 const ADMIN_PASS = 'sweepstouch2026';
 
@@ -93,12 +87,8 @@ function MobileNav({ items }: { items: { id: string; label: string; icon: React.
     if (!activeEl) return;
     const navRect = nav.getBoundingClientRect();
     const itemRect = activeEl.getBoundingClientRect();
-    gsap.to(pill, {
-      x: itemRect.left - navRect.left,
-      width: itemRect.width,
-      duration: 0.4,
-      ease: 'power3.inOut',
-    });
+    pill.style.transform = `translateX(${itemRect.left - navRect.left}px)`;
+    pill.style.width = `${itemRect.width}px`;
   }, [active]);
 
   return (
@@ -595,72 +585,65 @@ export default function PortfolioApp() {
   }, [theme, lang]);
 
   useEffect(() => {
-    /* ── Name entrance ─────────────────────────────── */
-    gsap.from('.gsap-name-word', {
-      y: 70,
-      opacity: 0,
-      duration: 0.9,
-      stagger: 0.14,
-      ease: 'power4.out',
-      delay: 0.1,
-      clearProps: 'all',
-    });
+    let dead = false;
+    (async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import('gsap'),
+        import('gsap/ScrollTrigger'),
+      ]);
+      if (dead) return;
+      gsap.registerPlugin(ScrollTrigger);
 
-    /* ── Role / tagline ────────────────────────────── */
-    gsap.from(['.role', '.tagline', '.avail-badge'], {
-      y: 18,
-      opacity: 0,
-      duration: 0.7,
-      stagger: 0.1,
-      ease: 'power3.out',
-      delay: 0.45,
-      clearProps: 'all',
-    });
-
-    /* ── Section headings line reveal ─────────────── */
-    gsap.utils.toArray<HTMLElement>('.section h2').forEach((el) => {
-      gsap.from(el, {
-        opacity: 0,
-        x: -16,
-        duration: 0.6,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+      /* ── Name entrance ─────────────────────────────── */
+      gsap.from('.gsap-name-word', {
+        y: 70, opacity: 0, duration: 0.9, stagger: 0.14,
+        ease: 'power4.out', delay: 0.1, clearProps: 'all',
       });
-    });
 
-    /* ── Experience cards stagger ─────────────────── */
-    ScrollTrigger.batch('.exp-item', {
-      onEnter: (els) => gsap.from(els, { y: 36, opacity: 0, stagger: 0.1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }),
-      start: 'top 88%',
-      once: true,
-    });
+      /* ── Role / tagline ────────────────────────────── */
+      gsap.from(['.role', '.tagline', '.avail-badge'], {
+        y: 18, opacity: 0, duration: 0.7, stagger: 0.1,
+        ease: 'power3.out', delay: 0.45, clearProps: 'all',
+      });
 
-    /* ── Service cards stagger ────────────────────── */
-    ScrollTrigger.batch('.service', {
-      onEnter: (els) => gsap.from(els, { y: 28, opacity: 0, scale: 0.97, stagger: 0.07, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
-      start: 'top 88%',
-      once: true,
-    });
+      /* ── Section headings ─────────────────────────── */
+      gsap.utils.toArray<HTMLElement>('.section h2').forEach((el: HTMLElement) => {
+        gsap.from(el, {
+          opacity: 0, x: -16, duration: 0.6, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+        });
+      });
 
-    /* ── Project items stagger ────────────────────── */
-    ScrollTrigger.batch('.project', {
-      onEnter: (els) => gsap.from(els, { x: -24, opacity: 0, stagger: 0.09, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
-      start: 'top 88%',
-      once: true,
-    });
+      /* ── Card staggers ────────────────────────────── */
+      ScrollTrigger.batch('.exp-item', {
+        onEnter: (els: Element[]) => gsap.from(els, { y: 36, opacity: 0, stagger: 0.1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }),
+        start: 'top 88%', once: true,
+      });
+      ScrollTrigger.batch('.service', {
+        onEnter: (els: Element[]) => gsap.from(els, { y: 28, opacity: 0, scale: 0.97, stagger: 0.07, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
+        start: 'top 88%', once: true,
+      });
+      ScrollTrigger.batch('.project', {
+        onEnter: (els: Element[]) => gsap.from(els, { x: -24, opacity: 0, stagger: 0.09, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
+        start: 'top 88%', once: true,
+      });
 
-    /* ── Contact stats counter ────────────────────── */
-    ScrollTrigger.create({
-      trigger: '.contact-card',
-      start: 'top 85%',
-      once: true,
-      onEnter: () => {
-        gsap.from('.cstat-v', { opacity: 0, y: 20, stagger: 0.12, duration: 0.6, ease: 'back.out(1.7)', clearProps: 'all' });
-        gsap.from('.contact-card', { opacity: 0, y: 24, duration: 0.7, ease: 'power3.out', clearProps: 'all' });
-      },
-    });
+      /* ── Contact stats ────────────────────────────── */
+      ScrollTrigger.create({
+        trigger: '.contact-card', start: 'top 85%', once: true,
+        onEnter: () => {
+          gsap.from('.cstat-v', { opacity: 0, y: 20, stagger: 0.12, duration: 0.6, ease: 'back.out(1.7)', clearProps: 'all' });
+          gsap.from('.contact-card', { opacity: 0, y: 24, duration: 0.7, ease: 'power3.out', clearProps: 'all' });
+        },
+      });
+    })();
 
-    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+    return () => {
+      dead = true;
+      import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+        ScrollTrigger.getAll().forEach((t: { kill(): void }) => t.kill());
+      });
+    };
   }, []);
 
   return (
@@ -742,7 +725,7 @@ export default function PortfolioApp() {
                 </div>
                 <div className="avatar-wrap">
                   <div className="avatar">
-                    <img src="/allan.jpeg" alt="Allan Aceituno" width={160} height={213} loading="eager" />
+                    <img src="/allan.jpeg" alt="Allan Aceituno" width={160} height={213} loading="eager" fetchPriority="high" />
                     <div className="avatar-tag">
                       <span>{c.about.tag1}</span>
                       <span>★</span>
