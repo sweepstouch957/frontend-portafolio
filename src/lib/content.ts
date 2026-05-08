@@ -32,12 +32,12 @@ export const CONTENT = {
     services: {
       heading: 'What I build',
       items: [
+        { key: 'frontend', title: 'Frontend & UI', desc: 'Pixel-tight Next.js interfaces, microfrontends, component libraries and high-performing landing pages.', stack: 'Next.js · React Query · MUI · Tailwind' },
+        { key: 'backend', title: 'Backend & Cloud', desc: 'Robust Node.js services on AWS — queues, sockets, storage, observability, CI/CD and microservices.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
+        { key: 'growth', title: 'Growth & Marketing', desc: 'Email marketing, digital ads, QR + short-link tracking and analytics — products that move the needle.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
         { key: 'whatsapp', title: 'WhatsApp & SMS Bots', desc: 'Conversational flows, opt-in campaigns, mass messaging and CRM webhooks engineered for scale and conversion.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Twilio' },
         { key: 'n8n', title: 'n8n & Automations', desc: 'Business automations that connect tools, orchestrate flows and remove human bottlenecks across departments.', stack: 'n8n · Webhooks · APIs · Cron · Zapier' },
         { key: 'mobile', title: 'Mobile Development', desc: 'Cross-platform mobile apps with native feel, offline-ready and integrated with secure backends.', stack: 'React Native · Expo · TypeScript' },
-        { key: 'backend', title: 'Backend & Cloud', desc: 'Robust Node.js services on AWS — queues, sockets, storage, observability, CI/CD and microservices.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
-        { key: 'frontend', title: 'Frontend & UI', desc: 'Pixel-tight Next.js interfaces, microfrontends, component libraries and high-performing landing pages.', stack: 'Next.js · React Query · MUI · Tailwind' },
-        { key: 'growth', title: 'Growth & Marketing', desc: 'Email marketing, digital ads, QR + short-link tracking and analytics — products that move the needle.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
       ],
     },
     contact: {
@@ -102,12 +102,12 @@ export const CONTENT = {
     services: {
       heading: 'Qué construyo',
       items: [
+        { key: 'frontend', title: 'Frontend y UI', desc: 'Interfaces Next.js pixel-perfect, microfrontends, librerías de componentes y landings de alto rendimiento.', stack: 'Next.js · React Query · MUI · Tailwind' },
+        { key: 'backend', title: 'Backend y Cloud', desc: 'Servicios Node.js robustos en AWS — colas, sockets, storage, observabilidad, CI/CD y microservicios.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
+        { key: 'growth', title: 'Crecimiento y Marketing', desc: 'Email marketing, marketing digital, tracking con QR + short-links y analítica — productos que mueven la aguja.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
         { key: 'whatsapp', title: 'Bots WhatsApp y SMS', desc: 'Flujos conversacionales, campañas opt-in, mensajería masiva y webhooks CRM diseñados para escala y conversión.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Twilio' },
         { key: 'n8n', title: 'n8n y Automatizaciones', desc: 'Automatizaciones que conectan herramientas, orquestan flujos y eliminan cuellos de botella entre áreas.', stack: 'n8n · Webhooks · APIs · Cron · Zapier' },
         { key: 'mobile', title: 'Desarrollo Móvil', desc: 'Aplicaciones móviles multiplataforma con sensación nativa, offline-ready, integradas a backends seguros.', stack: 'React Native · Expo · TypeScript' },
-        { key: 'backend', title: 'Backend y Cloud', desc: 'Servicios Node.js robustos en AWS — colas, sockets, storage, observabilidad, CI/CD y microservicios.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
-        { key: 'frontend', title: 'Frontend y UI', desc: 'Interfaces Next.js pixel-perfect, microfrontends, librerías de componentes y landings de alto rendimiento.', stack: 'Next.js · React Query · MUI · Tailwind' },
-        { key: 'growth', title: 'Crecimiento y Marketing', desc: 'Email marketing, marketing digital, tracking con QR + short-links y analítica — productos que mueven la aguja.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
       ],
     },
     contact: {
