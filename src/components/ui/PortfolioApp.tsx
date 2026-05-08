@@ -62,6 +62,34 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
   );
 }
 
+/* ─── Mobile Bottom Nav ──────────────────────────────────────────────── */
+function MobileNav({ items }: { items: { id: string; label: string; icon: React.ReactNode }[] }) {
+  const [active, setActive] = useState(items[0]?.id ?? '');
+  useEffect(() => {
+    const observers = items.map(({ id }) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const io = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
+        { rootMargin: '-30% 0px -55% 0px', threshold: 0 }
+      );
+      io.observe(el);
+      return io;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, [items]);
+  return (
+    <nav className="mobnav" aria-label="Mobile navigation">
+      {items.map(({ id, label, icon }) => (
+        <a key={id} href={`#${id}`} className={`mobnav-item${active === id ? ' active' : ''}`}>
+          <span className="mobnav-icon">{icon}</span>
+          <span className="mobnav-label">{label}</span>
+        </a>
+      ))}
+    </nav>
+  );
+}
+
 /* ─── Side Nav ───────────────────────────────────────────────────────── */
 function SideNav({ items }: { items: { id: string; label: string }[] }) {
   const [active, setActive] = useState(items[0]?.id ?? '');
@@ -376,11 +404,11 @@ export default function PortfolioApp() {
   const c = CONTENT[lang];
 
   const NAV = [
-    { id: 'about', label: c.nav.about },
-    { id: 'experience', label: c.nav.experience },
-    { id: 'services', label: c.nav.services },
-    { id: 'projects', label: c.nav.projects },
-    { id: 'contact', label: c.nav.contact },
+    { id: 'about',      label: c.nav.about,      icon: <Icons.NavUser /> },
+    { id: 'experience', label: c.nav.experience,  icon: <Icons.NavBriefcase /> },
+    { id: 'services',   label: c.nav.services,    icon: <Icons.NavCode /> },
+    { id: 'projects',   label: c.nav.projects,    icon: <Icons.NavGrid /> },
+    { id: 'contact',    label: c.nav.contact,     icon: <Icons.NavMail /> },
   ];
 
   const SERVICE_ICONS: Record<string, React.ReactNode> = {
@@ -473,16 +501,16 @@ export default function PortfolioApp() {
       <Spotlight enabled={true} />
       <div className="bg-dots" aria-hidden="true" />
 
-      {/* Mobile topbar */}
+      {/* Mobile topbar — controls only */}
       <header className="topbar">
-        <span className="brand">Allan <em>Aceituno</em></span>
-        <div className="topbar-right">
-          <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
-          <a href="#contact" className="btn primary btn-sm">
-            <Icons.Mail /> {c.rail.hire}
-          </a>
-        </div>
+        <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
+        <a href="#contact" className="btn primary btn-sm">
+          <Icons.Mail /> {c.rail.hire}
+        </a>
       </header>
+
+      {/* Mobile bottom nav */}
+      <MobileNav items={NAV} />
 
       {/* Desktop floating controls */}
       <div className="floating-ctl">
