@@ -143,7 +143,7 @@ a {
 
 /* ─── Rail (Left Sticky Column) ─────────────────────────────────────── */
 .rail {
-  padding: 72px 0 32px;
+  padding: 68px 0 16px;
 }
 
 @media (min-width: 1024px) {
@@ -310,7 +310,7 @@ a {
 
 /* ─── Main Column ───────────────────────────────────────────────────── */
 .main {
-  padding: 76px 0 80px;
+  padding: 68px 0 60px;
 }
 
 @media (min-width: 1024px) {
@@ -321,8 +321,8 @@ a {
 
 /* ─── Section Base ──────────────────────────────────────────────────── */
 .section {
-  scroll-margin-top: 80px;
-  padding: 40px 0;
+  scroll-margin-top: 68px;
+  padding: 24px 0;
 }
 
 @media (min-width: 1024px) {
