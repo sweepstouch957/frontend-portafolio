@@ -687,6 +687,8 @@ export default function PortfolioApp() {
             {lang === 'en' ? 'Open to work' : 'Disponible'}
           </div>
 
+          <SideNav items={NAV} />
+
           <div className="socials">
             <a href="https://github.com/allan021" target="_blank" rel="noreferrer" aria-label="GitHub">
               <Icons.Github />
@@ -704,8 +706,6 @@ export default function PortfolioApp() {
               <Icons.Whatsapp />
             </a>
           </div>
-
-          <SideNav items={NAV} />
         </aside>
 
         {/* Right main content */}
