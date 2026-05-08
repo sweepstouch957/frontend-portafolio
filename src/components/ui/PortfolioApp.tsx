@@ -1,0 +1,598 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { CONTENT, EXPERIENCE, SEED_PROJECTS, type Lang } from '../../lib/content';
+import { Icons } from './Icons';
+
+type Theme = 'dark' | 'light';
+
+interface Project {
+  id: string;
+  title: string | { en: string; es: string };
+  desc: string | { en: string; es: string };
+  tags: string[];
+  link?: string;
+  initials?: string;
+  thumb?: string;
+}
+
+function pick<T>(val: T | { en: T; es: T }, lang: Lang): T {
+  if (val && typeof val === 'object' && 'en' in (val as object)) {
+    return (val as { en: T; es: T })[lang];
+  }
+  return val as T;
+}
+
+/* ─── Spotlight ──────────────────────────────────────────────────────── */
+function Spotlight({ enabled }: { enabled: boolean }) {
+  useEffect(() => {
+    if (!enabled) return;
+    const onMove = (e: PointerEvent) => {
+      document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+      document.documentElement.style.setProperty('--my', e.clientY + 'px');
+    };
+    window.addEventListener('pointermove', onMove);
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [enabled]);
+  if (!enabled) return null;
+  return <div className="spotlight" aria-hidden="true" />;
+}
+
+/* ─── Reveal wrapper ─────────────────────────────────────────────────── */
+function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && el.classList.add('in')),
+      { threshold: 0.1 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={`reveal ${className}`} data-delay={delay}>
+      {children}
+    </div>
+  );
+}
+
+/* ─── Side Nav ───────────────────────────────────────────────────────── */
+function SideNav({ items }: { items: { id: string; label: string }[] }) {
+  const [active, setActive] = useState(items[0]?.id ?? '');
+  useEffect(() => {
+    const observers = items.map(({ id }) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const io = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
+        { rootMargin: '-30% 0px -55% 0px', threshold: 0 }
+      );
+      io.observe(el);
+      return io;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, [items]);
+  return (
+    <nav className="sidenav" aria-label="Section navigation">
+      {items.map(({ id, label }) => (
+        <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>
+          <span className="bar" /> {label}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+/* ─── Controls ───────────────────────────────────────────────────────── */
+function ThemeLangControls({
+  theme, setTheme, lang, setLang,
+}: {
+  theme: Theme; setTheme: (t: Theme) => void;
+  lang: Lang; setLang: (l: Lang) => void;
+}) {
+  return (
+    <div className="ctl-cluster">
+      <div className="ctl-seg" role="tablist" aria-label="Language">
+        <button
+          className={lang === 'en' ? 'on' : ''}
+          onClick={() => setLang('en')}
+          aria-label="English"
+          aria-selected={lang === 'en'}
+        >EN</button>
+        <button
+          className={lang === 'es' ? 'on' : ''}
+          onClick={() => setLang('es')}
+          aria-label="Español"
+          aria-selected={lang === 'es'}
+        >ES</button>
+      </div>
+      <button
+        className="ctl-icon"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+      >
+        {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
+      </button>
+    </div>
+  );
+}
+
+/* ─── Projects Island ────────────────────────────────────────────────── */
+type ModalContent = (typeof CONTENT)['en']['modal'] | (typeof CONTENT)['es']['modal'];
+
+function Projects({ lang, heading, addLabel, toasts, modal: m }: {
+  lang: Lang;
+  heading: string;
+  addLabel: string;
+  toasts: { added: string; removed: string };
+  modal: ModalContent;
+}) {
+  const [items, setItems] = useState<Project[]>(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('aha-projects-v2') || 'null');
+      return stored || SEED_PROJECTS;
+    } catch { return SEED_PROJECTS; }
+  });
+  const [open, setOpen] = useState(false);
+  const [toast, setToast] = useState('');
+
+  const persist = (next: Project[]) => {
+    setItems(next);
+    localStorage.setItem('aha-projects-v2', JSON.stringify(next));
+  };
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2000);
+  };
+
+  const handleAdd = (p: Omit<Project, 'id'>) => {
+    const next = [...items, { ...p, id: 'p-' + Date.now() }];
+    persist(next);
+    setOpen(false);
+    showToast(toasts.added);
+  };
+
+  const handleDelete = (id: string) => {
+    persist(items.filter((p) => p.id !== id));
+    showToast(toasts.removed);
+  };
+
+  return (
+    <section id="projects" className="section" data-screen-label="projects">
+      <Reveal>
+        <h2>{heading}</h2>
+      </Reveal>
+      <div className="projects">
+        {items.map((p, i) => (
+          <Reveal key={p.id} delay={Math.min(i + 1, 4) as 0 | 1 | 2 | 3 | 4}>
+            <article className="project">
+              <div className="pj-thumb">
+                {p.thumb
+                  ? <img src={p.thumb} alt="" loading="lazy" />
+                  : (p.initials || pick(p.title, lang).slice(0, 2).toUpperCase())}
+              </div>
+              <div>
+                <a
+                  className="pj-title"
+                  href={p.link || '#'}
+                  target={p.link ? '_blank' : undefined}
+                  rel="noreferrer"
+                >
+                  {pick(p.title, lang)}
+                  <span className="pj-arrow"><Icons.Arrow size={14} /></span>
+                </a>
+                <p className="pj-desc">{pick(p.desc, lang)}</p>
+                <div className="tags">
+                  {(p.tags || []).map((tg) => (
+                    <span key={tg} className="tag">{tg}</span>
+                  ))}
+                </div>
+              </div>
+              <button
+                className="pj-delete"
+                onClick={(e) => { e.preventDefault(); handleDelete(p.id); }}
+                title="Remove"
+                aria-label="Remove project"
+              >
+                <Icons.Trash />
+              </button>
+            </article>
+          </Reveal>
+        ))}
+        <Reveal delay={Math.min(items.length + 1, 4) as 0 | 1 | 2 | 3 | 4}>
+          <button className="add-card" onClick={() => setOpen(true)}>
+            <span className="plus">+</span>
+            {addLabel}
+          </button>
+        </Reveal>
+      </div>
+      {open && (
+        <ProjectModal modal={m} onClose={() => setOpen(false)} onAdd={handleAdd} />
+      )}
+      {toast && <div className="toast" role="status" aria-live="polite">{toast}</div>}
+    </section>
+  );
+}
+
+function ProjectModal({ modal: m, onClose, onAdd }: {
+  modal: ModalContent;
+  onClose: () => void;
+  onAdd: (p: Omit<Project, 'id'>) => void;
+}) {
+  const [form, setForm] = useState({ title: '', desc: '', tags: '', link: '', thumb: '' });
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm({ ...form, [k]: e.target.value });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim()) return;
+    onAdd({
+      title: form.title.trim(),
+      desc: form.desc.trim(),
+      tags: form.tags.split(',').map((s) => s.trim()).filter(Boolean),
+      link: form.link.trim(),
+      thumb: form.thumb.trim(),
+      initials: form.title.trim().slice(0, 2).toUpperCase(),
+    });
+  };
+
+  return (
+    <div className="modal-back" onClick={onClose} role="dialog" aria-modal="true" aria-label={m.title}>
+      <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit} noValidate>
+        <h3>{m.title}</h3>
+        <div className="field">
+          <label htmlFor="pj-title">{m.title_label}</label>
+          <input id="pj-title" value={form.title} onChange={update('title')} placeholder={m.title_ph} autoFocus required />
+        </div>
+        <div className="field">
+          <label htmlFor="pj-desc">{m.desc_label}</label>
+          <textarea id="pj-desc" rows={3} value={form.desc} onChange={update('desc')} placeholder={m.desc_ph} />
+        </div>
+        <div className="field">
+          <label htmlFor="pj-tags">{m.tags_label}</label>
+          <input id="pj-tags" value={form.tags} onChange={update('tags')} placeholder={m.tags_ph} />
+        </div>
+        <div className="field">
+          <label htmlFor="pj-link">{m.link_label}</label>
+          <input id="pj-link" type="url" value={form.link} onChange={update('link')} placeholder="https://…" />
+        </div>
+        <div className="field">
+          <label htmlFor="pj-thumb">{m.thumb_label}</label>
+          <input id="pj-thumb" type="url" value={form.thumb} onChange={update('thumb')} placeholder="https://…/cover.png" />
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="btn" onClick={onClose}>{m.cancel}</button>
+          <button type="submit" className="btn primary">{m.submit}</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/* ─── Contact Island ─────────────────────────────────────────────────── */
+function Contact({ lang }: { lang: Lang }) {
+  const c = CONTENT[lang].contact;
+  const [copied, setCopied] = useState(false);
+  const email = 'allan.aceituno20@gmail.com';
+
+  const copy = useCallback(() => {
+    navigator.clipboard?.writeText(email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  }, []);
+
+  return (
+    <section id="contact" className="section" data-screen-label="contact">
+      <Reveal>
+        <h2>{c.heading}</h2>
+      </Reveal>
+      <Reveal delay={1}>
+        <div className="contact-card">
+          <div className="contact-grid">
+            <div className="contact-copy">
+              <h3 dangerouslySetInnerHTML={{ __html: c.lead }} />
+              <p>{c.body}</p>
+              <div className="contact-stats">
+                {c.stats.map((s, i) => (
+                  <div key={i} className="cstat">
+                    <div className="cstat-v">{s.v}</div>
+                    <div className="cstat-k">{s.k}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="contact-actions-stack">
+              <a className="btn primary btn-hero" href={`mailto:${email}`} aria-label="Send email">
+                <Icons.Mail />
+                <span className="btn-hero-label">{email}</span>
+                <span className="btn-hero-arrow"><Icons.Arrow size={14} /></span>
+              </a>
+              <a
+                className="btn cv-btn"
+                href="/Allan_Aceituno_CV.docx"
+                download="Allan_Aceituno_CV.docx"
+              >
+                <Icons.Download /> {c.cv}
+              </a>
+              <div className="contact-action-grid">
+                <button className="btn small-btn" onClick={copy} aria-label="Copy email address">
+                  <Icons.Copy /> {copied ? c.copied : c.copy}
+                </button>
+                <a
+                  className="btn small-btn"
+                  href="https://wa.me/50498622160"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="WhatsApp"
+                >
+                  <Icons.Whatsapp /> WhatsApp
+                </a>
+                <a className="btn small-btn" href="tel:+50498622160" aria-label="Call phone">
+                  <Icons.Phone /> +504 9862-2160
+                </a>
+                <a
+                  className="btn small-btn"
+                  href="https://www.linkedin.com/in/allan-castro-1055b4150/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn profile"
+                >
+                  <Icons.Linkedin /> LinkedIn
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ─── Root App ───────────────────────────────────────────────────────── */
+export default function PortfolioApp() {
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window === 'undefined') return 'en';
+    return (localStorage.getItem('aha-lang') as Lang) || 'en';
+  });
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return (localStorage.getItem('aha-theme') as Theme) || 'dark';
+  });
+
+  const c = CONTENT[lang];
+
+  const NAV = [
+    { id: 'about', label: c.nav.about },
+    { id: 'experience', label: c.nav.experience },
+    { id: 'services', label: c.nav.services },
+    { id: 'projects', label: c.nav.projects },
+    { id: 'contact', label: c.nav.contact },
+  ];
+
+  const SERVICE_ICONS: Record<string, React.ReactNode> = {
+    whatsapp: <Icons.Bot />,
+    n8n: <Icons.Workflow />,
+    mobile: <Icons.MobilePhone />,
+    backend: <Icons.Server />,
+    frontend: <Icons.Layers />,
+    growth: <Icons.TrendUp />,
+  };
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.lang = lang;
+    localStorage.setItem('aha-theme', theme);
+    localStorage.setItem('aha-lang', lang);
+  }, [theme, lang]);
+
+  return (
+    <>
+      <Spotlight enabled={true} />
+      <div className="bg-dots" aria-hidden="true" />
+
+      {/* Mobile topbar */}
+      <header className="topbar">
+        <span className="brand">Allan <em>Aceituno</em></span>
+        <div className="topbar-right">
+          <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
+          <a href="#contact" className="btn primary btn-sm">
+            <Icons.Mail /> {c.rail.hire}
+          </a>
+        </div>
+      </header>
+
+      {/* Desktop floating controls */}
+      <div className="floating-ctl">
+        <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
+      </div>
+
+      <div className="shell">
+        {/* Left rail */}
+        <aside className="rail" data-screen-label="rail">
+          <Reveal delay={1}>
+            <h1 className="name">Allan <em>Aceituno</em></h1>
+          </Reveal>
+          <Reveal delay={2}>
+            <p className="role">{c.rail.role}</p>
+          </Reveal>
+          <Reveal delay={3}>
+            <p className="tagline">{c.rail.tagline}</p>
+            <div className="avail-badge">
+              <span className="avail-dot" />
+              {lang === 'en' ? 'Open to work' : 'Disponible'}
+            </div>
+          </Reveal>
+
+          <SideNav items={NAV} />
+
+          <Reveal delay={4}>
+            <div className="socials">
+              <a href="https://github.com/allan021" target="_blank" rel="noreferrer" aria-label="GitHub">
+                <Icons.Github />
+              </a>
+              <a href="https://www.linkedin.com/in/allan-castro-1055b4150/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <Icons.Linkedin />
+              </a>
+              <a href="https://codepen.io/Allan-Aceituno" target="_blank" rel="noreferrer" aria-label="CodePen">
+                <Icons.Codepen />
+              </a>
+              <a href="mailto:allan.aceituno20@gmail.com" aria-label="Email">
+                <Icons.Mail />
+              </a>
+              <a href="https://wa.me/50498622160" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                <Icons.Whatsapp />
+              </a>
+            </div>
+          </Reveal>
+        </aside>
+
+        {/* Right main content */}
+        <main className="main" id="main-content">
+          {/* About */}
+          <section id="about" className="section" data-screen-label="about">
+            <Reveal>
+              <h2>{c.about.heading}</h2>
+            </Reveal>
+            <Reveal delay={1}>
+              <div className="about-card">
+                <div className="about-prose">
+                  {c.about.paras.map((p, i) => (
+                    <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
+                  ))}
+                  <div className="kv-row">
+                    <span><span className="key">/loc</span> {c.about.pkv.loc}</span>
+                    <span><span className="key">/now</span> {c.about.pkv.now}</span>
+                    <span><span className="key">/tz</span> {c.about.pkv.tz}</span>
+                  </div>
+                </div>
+                <div className="avatar-wrap">
+                  <div className="avatar">
+                    <img src="/allan.jpeg" alt="Allan Aceituno" width={160} height={213} loading="eager" />
+                    <div className="avatar-tag">
+                      <span>{c.about.tag1}</span>
+                      <span>★</span>
+                    </div>
+                  </div>
+                  <div className="avatar-badge">HN</div>
+                </div>
+              </div>
+            </Reveal>
+          </section>
+
+          {/* Experience */}
+          <section id="experience" className="section" data-screen-label="experience">
+            <Reveal>
+              <h2>{c.nav.experience}</h2>
+            </Reveal>
+            <div className="exp-list">
+              {EXPERIENCE.map((e, i) => (
+                <Reveal key={i} delay={Math.min(i + 1, 4) as 0 | 1 | 2 | 3 | 4}>
+                  <div className="exp-item">
+                    <div className="exp-period">{pick(e.period, lang)}</div>
+                    <div>
+                      {e.href ? (
+                        <a className="exp-role" href={e.href} target="_blank" rel="noreferrer">
+                          {pick(e.role, lang)} · {e.company}
+                          <span className="exp-arrow"><Icons.Arrow size={14} /></span>
+                        </a>
+                      ) : (
+                        <div className="exp-role">
+                          {pick(e.role, lang)} · {e.company}
+                        </div>
+                      )}
+                      <div className="exp-company">{pick(e.location, lang)}</div>
+                      <p className="exp-desc">{pick(e.desc, lang)}</p>
+                      <div className="tags">
+                        {e.tags.map((tg) => (
+                          <span key={tg} className="tag">{tg}</span>
+                        ))}
+                      </div>
+                      {e.links && e.links.length > 0 && (
+                        <div className="exp-links">
+                          {e.links.map((l) => (
+                            <a key={l.href} className="exp-link" href={l.href} target="_blank" rel="noreferrer">
+                              <Icons.Arrow size={11} /> {l.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+
+          {/* Services */}
+          <section id="services" className="section" data-screen-label="services">
+            <Reveal>
+              <h2>{c.services.heading}</h2>
+            </Reveal>
+            <div className="services">
+              {c.services.items.map((s, i) => (
+                <Reveal key={s.key} delay={Math.min(i + 1, 4) as 0 | 1 | 2 | 3 | 4}>
+                  <div className="service">
+                    <div className="ico">{SERVICE_ICONS[s.key]}</div>
+                    <h3>{s.title}</h3>
+                    <p>{s.desc}</p>
+                    <div className="stack">{s.stack}</div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+
+          {/* Projects */}
+          <Projects
+            lang={lang}
+            heading={c.projectsHeading}
+            addLabel={c.addProject}
+            toasts={c.toasts}
+            modal={c.modal}
+          />
+
+          {/* Contact */}
+          <Contact lang={lang} />
+
+          {/* Social Rail */}
+          <Reveal>
+            <div className="social-rail" data-screen-label="socials">
+              <div className="social-rail-head">{c.socialsHeading}</div>
+              <div className="social-rail-icons">
+                {[
+                  { href: 'https://github.com/allan021', label: 'GitHub', icon: <Icons.Github /> },
+                  { href: 'https://www.linkedin.com/in/allan-castro-1055b4150/', label: 'LinkedIn', icon: <Icons.Linkedin /> },
+                  { href: 'https://codepen.io/Allan-Aceituno', label: 'CodePen', icon: <Icons.Codepen /> },
+                  { href: 'https://wa.me/50498622160', label: 'WhatsApp', icon: <Icons.Whatsapp /> },
+                  { href: 'mailto:allan.aceituno20@gmail.com', label: 'Email', icon: <Icons.Mail /> },
+                ].map((it) => (
+                  <a
+                    key={it.label}
+                    href={it.href}
+                    target={it.href.startsWith('http') ? '_blank' : undefined}
+                    rel="noreferrer"
+                    aria-label={it.label}
+                    className="social-chip"
+                  >
+                    {it.icon}
+                    <span className="social-chip-tip">{it.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          <div className="footer">{c.rail.footer}</div>
+        </main>
+      </div>
+    </>
+  );
+}
