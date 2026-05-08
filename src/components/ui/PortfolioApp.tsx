@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+
+const useIsomorphicLayout = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import { CONTENT, EXPERIENCE, SEED_PROJECTS, type Lang } from '../../lib/content';
 import { Icons } from './Icons';
 
@@ -41,9 +43,24 @@ function Spotlight({ enabled }: { enabled: boolean }) {
 /* ─── Reveal wrapper ─────────────────────────────────────────────────── */
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
+
+  /* Runs before paint — hides only below-fold elements, never above-fold (LCP safe) */
+  useIsomorphicLayout(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (el.getBoundingClientRect().top >= window.innerHeight * 0.98) {
+      el.classList.add('below-fold');
+    }
+  }, []);
+
+  /* After paint — above-fold: mark visible; below-fold: set up IO */
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (!el.classList.contains('below-fold')) {
+      el.classList.add('in');
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && el.classList.add('in')),
       { threshold: 0.1 }
@@ -51,6 +68,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
   return (
     <div ref={ref} className={`reveal ${className}`} data-delay={delay}>
       {children}
@@ -78,17 +96,20 @@ function MobileNav({ items }: { items: { id: string; label: string; icon: React.
     return () => observers.forEach((o) => o?.disconnect());
   }, [items]);
 
-  /* animate pill to active item */
+  /* move pill — deferred to next frame to avoid forced reflow */
   useEffect(() => {
-    const nav = navRef.current;
-    const pill = pillRef.current;
-    if (!nav || !pill) return;
-    const activeEl = nav.querySelector(`[data-id="${active}"]`) as HTMLElement;
-    if (!activeEl) return;
-    const navRect = nav.getBoundingClientRect();
-    const itemRect = activeEl.getBoundingClientRect();
-    pill.style.transform = `translateX(${itemRect.left - navRect.left}px)`;
-    pill.style.width = `${itemRect.width}px`;
+    const raf = requestAnimationFrame(() => {
+      const nav = navRef.current;
+      const pill = pillRef.current;
+      if (!nav || !pill) return;
+      const activeEl = nav.querySelector(`[data-id="${active}"]`) as HTMLElement;
+      if (!activeEl) return;
+      const navRect = nav.getBoundingClientRect();
+      const itemRect = activeEl.getBoundingClientRect();
+      pill.style.transform = `translateX(${itemRect.left - navRect.left}px)`;
+      pill.style.width = `${itemRect.width}px`;
+    });
+    return () => cancelAnimationFrame(raf);
   }, [active]);
 
   return (

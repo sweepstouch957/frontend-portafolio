@@ -1527,9 +1527,14 @@ a {
 }
 
 /* ─── Scroll Reveal ──────────────────────────────────────────────────── */
-.reveal {
+/* .reveal is visible by default — LCP-safe (no opacity:0 before JS) */
+.reveal.below-fold {
   opacity: 0;
   transform: translateY(18px);
+}
+
+.reveal.below-fold,
+.reveal.in {
   transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
@@ -1538,24 +1543,14 @@ a {
   transform: none;
 }
 
-.reveal[data-delay="1"] {
-  transition-delay: 80ms;
-}
-
-.reveal[data-delay="2"] {
-  transition-delay: 160ms;
-}
-
-.reveal[data-delay="3"] {
-  transition-delay: 240ms;
-}
-
-.reveal[data-delay="4"] {
-  transition-delay: 320ms;
-}
+.reveal.below-fold[data-delay="1"] { transition-delay: 80ms; }
+.reveal.below-fold[data-delay="2"] { transition-delay: 160ms; }
+.reveal.below-fold[data-delay="3"] { transition-delay: 240ms; }
+.reveal.below-fold[data-delay="4"] { transition-delay: 320ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .reveal.below-fold,
+  .reveal.in {
     opacity: 1;
     transform: none;
     transition: none;
