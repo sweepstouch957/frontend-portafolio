@@ -548,6 +548,19 @@ export default function PortfolioApp() {
   const eggTaps = useRef(0);
   const eggTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const changeTheme = (newTheme: Theme) => {
+    type VT = { ready: Promise<void> };
+    const d = document as Document & { startViewTransition?: (cb: () => void) => VT };
+    if (!d.startViewTransition) { setTheme(newTheme); return; }
+    const t = d.startViewTransition(() => setTheme(newTheme));
+    t.ready.then(() => {
+      (document.documentElement.animate as Function)(
+        { clipPath: ['inset(0 0 100% 0)', 'inset(0)'] },
+        { pseudoElement: '::view-transition-new(root)', duration: 600, easing: 'ease-in-out' }
+      );
+    });
+  };
+
   const handleEasterEgg = () => {
     eggTaps.current += 1;
     if (eggTimer.current) clearTimeout(eggTimer.current);
@@ -658,7 +671,7 @@ export default function PortfolioApp() {
 
       {/* Mobile topbar — controls only */}
       <header className="topbar">
-        <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
+        <ThemeLangControls theme={theme} setTheme={changeTheme} lang={lang} setLang={setLang} />
         <a href="#contact" className="btn primary btn-sm">
           <Icons.Mail /> {c.rail.hire}
         </a>
@@ -669,7 +682,7 @@ export default function PortfolioApp() {
 
       {/* Desktop floating controls */}
       <div className="floating-ctl">
-        <ThemeLangControls theme={theme} setTheme={setTheme} lang={lang} setLang={setLang} />
+        <ThemeLangControls theme={theme} setTheme={changeTheme} lang={lang} setLang={setLang} />
       </div>
 
       <div className="shell">
