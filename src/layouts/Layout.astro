@@ -6,8 +6,11 @@ interface Props {
 
 const {
   title = 'Allan Aceituno · Fullstack Developer',
-  description = 'Fullstack developer with 5+ years building Next.js apps, Node.js backends, WhatsApp automations and design systems.',
+  description = 'Fullstack developer with 5+ years building Next.js apps, Node.js backends, WhatsApp/SMS automations, loyalty systems and design systems. Open to work — remote.',
 } = Astro.props;
+
+const canonical = 'https://portafolio-delta.vercel.app';
+const ogImage  = `${canonical}/og.png`;
 ---
 
 <!doctype html>
@@ -16,7 +19,43 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="fullstack developer, Next.js, Node.js, React, TypeScript, MongoDB, WhatsApp bots, SMS automation, loyalty systems, Honduras, remote" />
+    <meta name="author" content="Allan Aceituno" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
     <title>{title}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content={canonical} />
+    <meta property="og:image"       content={ogImage} />
+    <meta property="og:site_name"   content="Allan Aceituno" />
+    <meta property="og:locale"      content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={ogImage} />
+
+    <!-- JSON-LD Structured Data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Allan Aceituno",
+      "jobTitle": "Fullstack Developer",
+      "url": canonical,
+      "email": "allan.aceituno20@gmail.com",
+      "sameAs": [
+        "https://github.com/allan021",
+        "https://www.linkedin.com/in/allan-castro-1055b4150/",
+        "https://codepen.io/Allan-Aceituno"
+      ],
+      "knowsAbout": ["Next.js","Node.js","React","TypeScript","MongoDB","Redis","WhatsApp API","Twilio","AWS","Azure"],
+      "worksFor": { "@type": "Organization", "name": "Sweepstouch" }
+    })} />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,11 +64,6 @@ const {
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
 
     <!-- Skip to main -->
     <style>

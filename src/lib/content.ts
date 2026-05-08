@@ -24,7 +24,7 @@ export const CONTENT = {
       tag1: 'HND',
       pkv: { loc: 'El Progreso, HN', now: 'Open to work', tz: 'GMT-6' },
       paras: [
-        "I'm <strong>Allan Aceituno</strong>, a fullstack developer with <span class='hl'>5+ years</span> turning business problems into software that <strong>converts and sells</strong>. I design and ship end-to-end — from interfaces and design systems to <strong>microservices, queues and cloud infrastructure</strong>.",
+        "I'm <strong>Allan Aceituno</strong>, a fullstack developer with <span class='hl'>5+ years</span> turning business problems into software that <strong>converts and sells</strong>. I design and ship end-to-end — from interfaces and design systems to <strong>microservices, ORMs, CMS platforms, domain management and cloud infrastructure</strong>.",
         "Today I lead technology at <strong>Sweepstouch</strong> — kiosks running on thousands of tablets, MMS/SMS opt-in campaigns, referral systems, BullMQ pipelines and real-time analytics. Before that I built the <strong>Microfrontends platform</strong> at Banco Ficohsa with React Query, MUI, Tailwind and Azure infrastructure.",
         "I believe in <span class='hl'>no impossibles</span>: every product is solvable with the right architecture, the right team, and a relentless focus on the user.",
       ],
@@ -32,12 +32,12 @@ export const CONTENT = {
     services: {
       heading: 'What I build',
       items: [
-        { key: 'frontend', title: 'Frontend & UI', desc: 'Pixel-tight Next.js interfaces, microfrontends, component libraries and high-performing landing pages.', stack: 'Next.js · React Query · MUI · Tailwind' },
-        { key: 'backend', title: 'Backend & Cloud', desc: 'Robust Node.js services on AWS — queues, sockets, storage, observability, CI/CD and microservices.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
+        { key: 'frontend', title: 'Frontend & UI', desc: 'Pixel-tight Next.js interfaces, microfrontends, component libraries, CMS integrations and high-performing landing pages.', stack: 'Next.js · React Query · MUI · Tailwind · Sanity · Contentful' },
+        { key: 'backend', title: 'Backend & Cloud', desc: 'Robust Node.js APIs with ORMs, domain management, queues, sockets, storage and microservices on AWS and Azure.', stack: 'Node · Prisma · TypeORM · MongoDB · Redis · S3 · Docker · Azure' },
         { key: 'growth', title: 'Growth & Marketing', desc: 'Email marketing, digital ads, QR + short-link tracking and analytics — products that move the needle.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
-        { key: 'whatsapp', title: 'WhatsApp & SMS Bots', desc: 'Conversational flows, opt-in campaigns, mass messaging and CRM webhooks engineered for scale and conversion.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Twilio' },
+        { key: 'whatsapp', title: 'WhatsApp & SMS Bots', desc: 'Conversational flows, opt-in campaigns, mass messaging and CRM webhooks engineered for scale and conversion.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Infobip' },
         { key: 'n8n', title: 'n8n & Automations', desc: 'Business automations that connect tools, orchestrate flows and remove human bottlenecks across departments.', stack: 'n8n · Webhooks · APIs · Cron · Zapier' },
-        { key: 'mobile', title: 'Mobile Development', desc: 'Cross-platform mobile apps with native feel, offline-ready and integrated with secure backends.', stack: 'React Native · Expo · TypeScript' },
+        { key: 'mobile', title: 'Mobile Development', desc: 'Native and cross-platform mobile apps for Android and iOS — from React Native to Flutter and Kotlin native modules.', stack: 'React Native · Flutter · Kotlin · Expo · TypeScript' },
       ],
     },
     contact: {
@@ -94,7 +94,7 @@ export const CONTENT = {
       tag1: 'HND',
       pkv: { loc: 'El Progreso, HN', now: 'Disponible', tz: 'GMT-6' },
       paras: [
-        "Soy <strong>Allan Aceituno</strong>, desarrollador fullstack con <span class='hl'>+5 años</span> convirtiendo problemas de negocio en software que <strong>convierte y vende</strong>. Diseño y entrego de punta a punta — desde interfaces y sistemas de diseño hasta <strong>microservicios, colas e infraestructura cloud</strong>.",
+        "Soy <strong>Allan Aceituno</strong>, desarrollador fullstack con <span class='hl'>+5 años</span> convirtiendo problemas de negocio en software que <strong>convierte y vende</strong>. Diseño y entrego de punta a punta — desde interfaces y sistemas de diseño hasta <strong>microservicios, ORMs, plataformas CMS, gestión de dominios e infraestructura cloud</strong>.",
         "Hoy lidero la tecnología en <strong>Sweepstouch</strong> — kioscos en miles de tablets en tiendas, campañas opt-in MMS/SMS, sistemas de referidos, pipelines BullMQ y analítica en tiempo real. Antes construí la <strong>plataforma de Microfrontends</strong> en Banco Ficohsa con React Query, MUI, Tailwind e infraestructura Azure.",
         "Creo en <span class='hl'>no hay imposibles</span>: todo producto se resuelve con la arquitectura correcta, el equipo correcto y obsesión por el usuario.",
       ],
@@ -102,12 +102,12 @@ export const CONTENT = {
     services: {
       heading: 'Qué construyo',
       items: [
-        { key: 'frontend', title: 'Frontend y UI', desc: 'Interfaces Next.js pixel-perfect, microfrontends, librerías de componentes y landings de alto rendimiento.', stack: 'Next.js · React Query · MUI · Tailwind' },
-        { key: 'backend', title: 'Backend y Cloud', desc: 'Servicios Node.js robustos en AWS — colas, sockets, storage, observabilidad, CI/CD y microservicios.', stack: 'Node · MongoDB · Redis · S3 · Docker · Azure' },
+        { key: 'frontend', title: 'Frontend y UI', desc: 'Interfaces Next.js pixel-perfect, microfrontends, librerías de componentes, integraciones CMS y landings de alto rendimiento.', stack: 'Next.js · React Query · MUI · Tailwind · Sanity · Contentful' },
+        { key: 'backend', title: 'Backend y Cloud', desc: 'APIs Node.js robustas con ORMs, gestión de dominios, colas, sockets, storage y microservicios en AWS y Azure.', stack: 'Node · Prisma · TypeORM · MongoDB · Redis · S3 · Docker · Azure' },
         { key: 'growth', title: 'Crecimiento y Marketing', desc: 'Email marketing, marketing digital, tracking con QR + short-links y analítica — productos que mueven la aguja.', stack: 'Brevo · Meta · GA4 · UTM · Cloudinary' },
-        { key: 'whatsapp', title: 'Bots WhatsApp y SMS', desc: 'Flujos conversacionales, campañas opt-in, mensajería masiva y webhooks CRM diseñados para escala y conversión.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Twilio' },
+        { key: 'whatsapp', title: 'Bots WhatsApp y SMS', desc: 'Flujos conversacionales, campañas opt-in, mensajería masiva y webhooks CRM diseñados para escala y conversión.', stack: 'BullMQ · Redis · WhatsApp Cloud API · Infobip' },
         { key: 'n8n', title: 'n8n y Automatizaciones', desc: 'Automatizaciones que conectan herramientas, orquestan flujos y eliminan cuellos de botella entre áreas.', stack: 'n8n · Webhooks · APIs · Cron · Zapier' },
-        { key: 'mobile', title: 'Desarrollo Móvil', desc: 'Aplicaciones móviles multiplataforma con sensación nativa, offline-ready, integradas a backends seguros.', stack: 'React Native · Expo · TypeScript' },
+        { key: 'mobile', title: 'Desarrollo Móvil', desc: 'Apps móviles nativas y multiplataforma para Android e iOS — desde React Native hasta Flutter y módulos nativos en Kotlin.', stack: 'React Native · Flutter · Kotlin · Expo · TypeScript' },
       ],
     },
     contact: {
@@ -153,7 +153,7 @@ export const EXPERIENCE = [
       en: 'After leading the platform rebuild, I now own all of Sweepstouch technology — kiosk apps running on thousands of tablets across stores, MMS/SMS opt-in campaign engines, referral systems, BullMQ pipelines, MongoDB at scale, and real-time ops dashboards.',
       es: 'Tras liderar la reconstrucción de la plataforma, ahora dirijo toda la tecnología de Sweepstouch — apps de kiosko en miles de tablets en tiendas, motores de campañas opt-in MMS/SMS, sistemas de referidos, pipelines BullMQ, MongoDB a escala y dashboards de operaciones en tiempo real.',
     },
-    tags: ['Next.js', 'Node.js', 'MongoDB', 'Redis', 'BullMQ', 'AWS S3', 'Twilio', 'Cloudinary'],
+    tags: ['Next.js', 'Node.js', 'MongoDB', 'Redis', 'BullMQ', 'AWS S3', 'Infobip', 'Cloudinary'],
     href: 'https://sweepstouch.com',
     links: [],
   },
@@ -204,7 +204,7 @@ export const SEED_PROJECTS = [
       en: 'Campaign engine for opt-in MMS/SMS — landing pages per store, tracking, queues, and conversion analytics.',
       es: 'Motor de campañas opt-in MMS/SMS — landings por tienda, tracking, colas y analítica de conversión.',
     },
-    tags: ['Node', 'Twilio', 'BullMQ', 'Redis'],
+    tags: ['Node', 'Infobip', 'BullMQ', 'Redis'],
     link: 'https://st.sweepstouch.com/optin?slug=shop-fresh-food-4159-white-plains-rd-bronx-ny-10466-usa',
     initials: 'OP',
   },

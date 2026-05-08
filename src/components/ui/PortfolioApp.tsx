@@ -8,6 +8,8 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+const ADMIN_PASS = 'sweepstouch2026';
+
 type Theme = 'dark' | 'light';
 
 interface Project {
@@ -337,6 +339,122 @@ function ProjectModal({ modal: m, onClose, onAdd }: {
   );
 }
 
+/* ─── Admin Panel ────────────────────────────────────────────────────── */
+function AdminPanel({ onClose }: { onClose: () => void }) {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('aha-admin') === '1');
+  const [pass, setPass] = useState('');
+  const [err, setErr]   = useState(false);
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try { return JSON.parse(localStorage.getItem('aha-projects-v2') || 'null') || SEED_PROJECTS; }
+    catch { return SEED_PROJECTS; }
+  });
+  const [form, setForm] = useState({ title: '', desc: '', tags: '', link: '', thumb: '' });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const login = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (pass === ADMIN_PASS) { sessionStorage.setItem('aha-admin', '1'); setAuthed(true); setErr(false); }
+    else { setErr(true); setPass(''); }
+  };
+
+  const persist = (next: Project[]) => {
+    setProjects(next);
+    localStorage.setItem('aha-projects-v2', JSON.stringify(next));
+  };
+
+  const addProject = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (!form.title.trim()) return;
+    persist([...projects, {
+      id: 'p-' + Date.now(),
+      title: form.title.trim(), desc: form.desc.trim(),
+      tags: form.tags.split(',').map(s => s.trim()).filter(Boolean),
+      link: form.link.trim(), thumb: form.thumb.trim(),
+      initials: form.title.trim().slice(0, 2).toUpperCase(),
+    }]);
+    setForm({ title: '', desc: '', tags: '', link: '', thumb: '' });
+  };
+
+  const del = (id: string) => persist(projects.filter(p => p.id !== id));
+
+  return (
+    <div className="admin-back" onClick={onClose}>
+      <div className="admin-modal" onClick={e => e.stopPropagation()}>
+        <div className="admin-header">
+          <h3>
+            {authed ? '⚡ Admin' : '🔐 Admin'}
+            <span className="admin-badge">{authed ? 'AUTHENTICATED' : 'PRIVATE'}</span>
+          </h3>
+          <button className="admin-close" onClick={onClose}>×</button>
+        </div>
+
+        {!authed ? (
+          <form onSubmit={login}>
+            <div className="field">
+              <label htmlFor="adm-pass">Password</label>
+              <input
+                id="adm-pass" type="password" autoFocus
+                value={pass} onChange={e => { setPass(e.target.value); setErr(false); }}
+                placeholder="Enter admin password"
+                style={err ? { borderColor: '#ef4444' } : {}}
+              />
+              {err && <span style={{ fontSize: 12, color: '#ef4444' }}>Wrong password</span>}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn" onClick={onClose}>Cancel</button>
+              <button type="submit" className="btn primary">Unlock</button>
+            </div>
+            <p className="admin-login-hint">EASTER EGG · ADMIN ONLY</p>
+          </form>
+        ) : (
+          <>
+            <p className="admin-section-title">Projects ({projects.length})</p>
+            <div className="admin-proj-list">
+              {projects.map(p => (
+                <div key={p.id} className="admin-proj-row">
+                  <span>{typeof p.title === 'object' ? p.title.en : p.title}</span>
+                  <button className="admin-proj-del" onClick={() => del(p.id)} title="Delete">×</button>
+                </div>
+              ))}
+            </div>
+
+            <p className="admin-section-title" style={{ marginTop: 20 }}>Add project</p>
+            <form onSubmit={addProject}>
+              <div className="field">
+                <label htmlFor="a-title">Title</label>
+                <input id="a-title" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Project name" required />
+              </div>
+              <div className="field">
+                <label htmlFor="a-desc">Description</label>
+                <textarea id="a-desc" rows={2} value={form.desc} onChange={e => setForm({...form, desc: e.target.value})} placeholder="What you built…" />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="field">
+                  <label htmlFor="a-tags">Tech (comma-sep)</label>
+                  <input id="a-tags" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} placeholder="Next.js, Node" />
+                </div>
+                <div className="field">
+                  <label htmlFor="a-link">Link</label>
+                  <input id="a-link" type="url" value={form.link} onChange={e => setForm({...form, link: e.target.value})} placeholder="https://…" />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn" onClick={() => { sessionStorage.removeItem('aha-admin'); setAuthed(false); }}>Log out</button>
+                <button type="submit" className="btn primary">+ Add project</button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Contact Island ─────────────────────────────────────────────────── */
 function Contact({ lang }: { lang: Lang }) {
   const c = CONTENT[lang].contact;
@@ -426,6 +544,16 @@ export default function PortfolioApp() {
     if (typeof window === 'undefined') return 'dark';
     return (localStorage.getItem('aha-theme') as Theme) || 'dark';
   });
+  const [adminOpen, setAdminOpen] = useState(false);
+  const eggTaps = useRef(0);
+  const eggTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleEasterEgg = () => {
+    eggTaps.current += 1;
+    if (eggTimer.current) clearTimeout(eggTimer.current);
+    eggTimer.current = setTimeout(() => { eggTaps.current = 0; }, 1200);
+    if (eggTaps.current >= 5) { eggTaps.current = 0; setAdminOpen(true); }
+  };
 
   const c = CONTENT[lang];
 
@@ -526,6 +654,7 @@ export default function PortfolioApp() {
     <>
       <Spotlight enabled={true} />
       <div className="bg-dots" aria-hidden="true" />
+      {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
       {/* Mobile topbar — controls only */}
       <header className="topbar">
@@ -546,7 +675,7 @@ export default function PortfolioApp() {
       <div className="shell">
         {/* Left rail */}
         <aside className="rail" data-screen-label="rail">
-          <h1 className="name">
+          <h1 className="name" onClick={handleEasterEgg} style={{ cursor: 'default', userSelect: 'none' }}>
             <span className="gsap-name-word" style={{ display: 'inline-block' }}>Allan</span>
             {' '}
             <em className="gsap-name-word" style={{ display: 'inline-block' }}>Aceituno</em>
@@ -657,6 +786,19 @@ export default function PortfolioApp() {
               ))}
             </div>
           </section>
+
+          {/* CTA after experience */}
+          <Reveal>
+            <div className="cta-banner">
+              <p>{lang === 'en'
+                ? <>Looking for a <strong>fullstack developer</strong> who delivers end-to-end? Let's talk.</>
+                : <>¿Buscas un <strong>desarrollador fullstack</strong> que entrega de punta a punta? Hablemos.</>}
+              </p>
+              <a href="#contact" className="btn primary btn-sm" style={{ flexShrink: 0 }}>
+                {lang === 'en' ? 'Work with me' : 'Trabajemos juntos'} <Icons.Arrow size={13} />
+              </a>
+            </div>
+          </Reveal>
 
           {/* Services */}
           <section id="services" className="section" data-screen-label="services">
