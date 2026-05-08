@@ -687,27 +687,25 @@ export default function PortfolioApp() {
             {lang === 'en' ? 'Open to work' : 'Disponible'}
           </div>
 
-          <SideNav items={NAV} />
+          <div className="socials">
+            <a href="https://github.com/allan021" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <Icons.Github />
+            </a>
+            <a href="https://www.linkedin.com/in/allan-castro-1055b4150/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+              <Icons.Linkedin />
+            </a>
+            <a href="https://codepen.io/Allan-Aceituno" target="_blank" rel="noreferrer" aria-label="CodePen">
+              <Icons.Codepen />
+            </a>
+            <a href="mailto:allan.aceituno20@gmail.com" aria-label="Email">
+              <Icons.Mail />
+            </a>
+            <a href="https://wa.me/50498622160" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+              <Icons.Whatsapp />
+            </a>
+          </div>
 
-          <Reveal delay={4}>
-            <div className="socials">
-              <a href="https://github.com/allan021" target="_blank" rel="noreferrer" aria-label="GitHub">
-                <Icons.Github />
-              </a>
-              <a href="https://www.linkedin.com/in/allan-castro-1055b4150/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                <Icons.Linkedin />
-              </a>
-              <a href="https://codepen.io/Allan-Aceituno" target="_blank" rel="noreferrer" aria-label="CodePen">
-                <Icons.Codepen />
-              </a>
-              <a href="mailto:allan.aceituno20@gmail.com" aria-label="Email">
-                <Icons.Mail />
-              </a>
-              <a href="https://wa.me/50498622160" target="_blank" rel="noreferrer" aria-label="WhatsApp">
-                <Icons.Whatsapp />
-              </a>
-            </div>
-          </Reveal>
+          <SideNav items={NAV} />
         </aside>
 
         {/* Right main content */}
