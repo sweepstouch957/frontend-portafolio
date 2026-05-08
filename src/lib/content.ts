@@ -187,6 +187,17 @@ export const EXPERIENCE = [
 
 export const SEED_PROJECTS = [
   {
+    id: 'sweepstouch-loyalty',
+    title: { en: 'Sweepstouch Loyalty', es: 'Sweepstouch Fidelización' },
+    desc: {
+      en: 'Customer loyalty & points platform — scan QR, earn points, redeem rewards. Built for scale across hundreds of merchant locations.',
+      es: 'Plataforma de puntos y fidelización de clientes — escanea QR, acumula puntos, canjea premios. Diseñada para escalar en cientos de comercios.',
+    },
+    tags: ['Next.js', 'Node', 'MongoDB', 'Redis'],
+    link: 'https://links.sweepstouch.com/?slug=merchant-r-street-lar-azul-55-barueri-sp&sl=SL-ND9WFY',
+    initials: 'LY',
+  },
+  {
     id: 'sweepstouch-optin',
     title: { en: 'MMS/SMS Opt-in', es: 'Opt-in MMS/SMS' },
     desc: {

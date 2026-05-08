@@ -310,7 +310,7 @@ a {
 
 /* ─── Main Column ───────────────────────────────────────────────────── */
 .main {
-  padding: 88px 0 120px;
+  padding: 76px 0 80px;
 }
 
 @media (min-width: 1024px) {
@@ -321,12 +321,20 @@ a {
 
 /* ─── Section Base ──────────────────────────────────────────────────── */
 .section {
-  scroll-margin-top: 88px;
-  padding: 64px 0;
+  scroll-margin-top: 80px;
+  padding: 40px 0;
+}
+
+@media (min-width: 1024px) {
+  .section { padding: 64px 0; }
 }
 
 .section+.section {
-  padding-top: 32px;
+  padding-top: 20px;
+}
+
+@media (min-width: 1024px) {
+  .section+.section { padding-top: 32px; }
 }
 
 .section h2 {
@@ -376,15 +384,22 @@ a {
 .brand {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: clamp(15px, 4vw, 20px);
   letter-spacing: -0.03em;
-  text-align: center;
+  white-space: nowrap;
 }
 
 .brand em {
   font-style: italic;
   font-weight: 400;
   color: var(--accent);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .topbar-right {
@@ -574,21 +589,27 @@ a {
 .kv-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 14px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--ink-3);
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 .kv-row span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
 }
 
 .kv-row .key {
-  color: var(--ink-4);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 /* ─── Experience ─────────────────────────────────────────────────────── */

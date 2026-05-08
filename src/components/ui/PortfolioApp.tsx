@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CONTENT, EXPERIENCE, SEED_PROJECTS, type Lang } from '../../lib/content';
 import { Icons } from './Icons';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 type Theme = 'dark' | 'light';
 
@@ -393,6 +399,75 @@ export default function PortfolioApp() {
     localStorage.setItem('aha-lang', lang);
   }, [theme, lang]);
 
+  useEffect(() => {
+    /* ── Name entrance ─────────────────────────────── */
+    gsap.from('.gsap-name-word', {
+      y: 70,
+      opacity: 0,
+      duration: 0.9,
+      stagger: 0.14,
+      ease: 'power4.out',
+      delay: 0.1,
+      clearProps: 'all',
+    });
+
+    /* ── Role / tagline ────────────────────────────── */
+    gsap.from(['.role', '.tagline', '.avail-badge'], {
+      y: 18,
+      opacity: 0,
+      duration: 0.7,
+      stagger: 0.1,
+      ease: 'power3.out',
+      delay: 0.45,
+      clearProps: 'all',
+    });
+
+    /* ── Section headings line reveal ─────────────── */
+    gsap.utils.toArray<HTMLElement>('.section h2').forEach((el) => {
+      gsap.from(el, {
+        opacity: 0,
+        x: -16,
+        duration: 0.6,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+      });
+    });
+
+    /* ── Experience cards stagger ─────────────────── */
+    ScrollTrigger.batch('.exp-item', {
+      onEnter: (els) => gsap.from(els, { y: 36, opacity: 0, stagger: 0.1, duration: 0.55, ease: 'power2.out', clearProps: 'all' }),
+      start: 'top 88%',
+      once: true,
+    });
+
+    /* ── Service cards stagger ────────────────────── */
+    ScrollTrigger.batch('.service', {
+      onEnter: (els) => gsap.from(els, { y: 28, opacity: 0, scale: 0.97, stagger: 0.07, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
+      start: 'top 88%',
+      once: true,
+    });
+
+    /* ── Project items stagger ────────────────────── */
+    ScrollTrigger.batch('.project', {
+      onEnter: (els) => gsap.from(els, { x: -24, opacity: 0, stagger: 0.09, duration: 0.5, ease: 'power2.out', clearProps: 'all' }),
+      start: 'top 88%',
+      once: true,
+    });
+
+    /* ── Contact stats counter ────────────────────── */
+    ScrollTrigger.create({
+      trigger: '.contact-card',
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        gsap.from('.cstat-v', { opacity: 0, y: 20, stagger: 0.12, duration: 0.6, ease: 'back.out(1.7)', clearProps: 'all' });
+        gsap.from('.contact-card', { opacity: 0, y: 24, duration: 0.7, ease: 'power3.out', clearProps: 'all' });
+      },
+    });
+
+    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+  }, []);
+
   return (
     <>
       <Spotlight enabled={true} />
@@ -417,19 +492,17 @@ export default function PortfolioApp() {
       <div className="shell">
         {/* Left rail */}
         <aside className="rail" data-screen-label="rail">
-          <Reveal delay={1}>
-            <h1 className="name">Allan <em>Aceituno</em></h1>
-          </Reveal>
-          <Reveal delay={2}>
-            <p className="role">{c.rail.role}</p>
-          </Reveal>
-          <Reveal delay={3}>
-            <p className="tagline">{c.rail.tagline}</p>
-            <div className="avail-badge">
-              <span className="avail-dot" />
-              {lang === 'en' ? 'Open to work' : 'Disponible'}
-            </div>
-          </Reveal>
+          <h1 className="name">
+            <span className="gsap-name-word" style={{ display: 'inline-block' }}>Allan</span>
+            {' '}
+            <em className="gsap-name-word" style={{ display: 'inline-block' }}>Aceituno</em>
+          </h1>
+          <p className="role">{c.rail.role}</p>
+          <p className="tagline">{c.rail.tagline}</p>
+          <div className="avail-badge">
+            <span className="avail-dot" />
+            {lang === 'en' ? 'Open to work' : 'Disponible'}
+          </div>
 
           <SideNav items={NAV} />
 
