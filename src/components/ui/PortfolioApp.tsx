@@ -358,7 +358,7 @@ function ProjectModal({ modal: m, onClose, onAdd }: {
 function AdminPanel({ onClose }: { onClose: () => void }) {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem('aha-admin') === '1');
   const [pass, setPass] = useState('');
-  const [err, setErr]   = useState(false);
+  const [err, setErr] = useState(false);
   const [projects, setProjects] = useState<Project[]>(() => {
     try { return JSON.parse(localStorage.getItem('aha-projects-v2') || 'null') || SEED_PROJECTS; }
     catch { return SEED_PROJECTS; }
@@ -442,20 +442,20 @@ function AdminPanel({ onClose }: { onClose: () => void }) {
             <form onSubmit={addProject}>
               <div className="field">
                 <label htmlFor="a-title">Title</label>
-                <input id="a-title" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Project name" required />
+                <input id="a-title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Project name" required />
               </div>
               <div className="field">
                 <label htmlFor="a-desc">Description</label>
-                <textarea id="a-desc" rows={2} value={form.desc} onChange={e => setForm({...form, desc: e.target.value})} placeholder="What you built…" />
+                <textarea id="a-desc" rows={2} value={form.desc} onChange={e => setForm({ ...form, desc: e.target.value })} placeholder="What you built…" />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div className="field">
                   <label htmlFor="a-tags">Tech (comma-sep)</label>
-                  <input id="a-tags" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} placeholder="Next.js, Node" />
+                  <input id="a-tags" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} placeholder="Next.js, Node" />
                 </div>
                 <div className="field">
                   <label htmlFor="a-link">Link</label>
-                  <input id="a-link" type="url" value={form.link} onChange={e => setForm({...form, link: e.target.value})} placeholder="https://…" />
+                  <input id="a-link" type="url" value={form.link} onChange={e => setForm({ ...form, link: e.target.value })} placeholder="https://…" />
                 </div>
               </div>
               <div className="modal-actions">
@@ -586,11 +586,11 @@ export default function PortfolioApp() {
   const c = CONTENT[lang];
 
   const NAV = [
-    { id: 'about',      label: c.nav.about,      icon: <Icons.NavUser /> },
-    { id: 'experience', label: c.nav.experience,  icon: <Icons.NavBriefcase /> },
-    { id: 'services',   label: c.nav.services,    icon: <Icons.NavCode /> },
-    { id: 'projects',   label: c.nav.projects,    icon: <Icons.NavGrid /> },
-    { id: 'contact',    label: c.nav.contact,     icon: <Icons.NavMail /> },
+    { id: 'about', label: c.nav.about, icon: <Icons.NavUser /> },
+    { id: 'experience', label: c.nav.experience, icon: <Icons.NavBriefcase /> },
+    { id: 'services', label: c.nav.services, icon: <Icons.NavCode /> },
+    { id: 'projects', label: c.nav.projects, icon: <Icons.NavGrid /> },
+    { id: 'contact', label: c.nav.contact, icon: <Icons.NavMail /> },
   ];
 
   const SERVICE_ICONS: Record<string, React.ReactNode> = {
@@ -750,7 +750,7 @@ export default function PortfolioApp() {
                 </div>
                 <div className="avatar-wrap">
                   <div className="avatar">
-                    <img src="/allan.jpeg" alt="Allan Aceituno" width={160} height={213} loading="eager" fetchPriority="high" />
+                    <img src="/allan.webp" alt="Allan Aceituno" width={160} height={213} loading="eager" fetchPriority="high" />
                     <div className="avatar-tag">
                       <span>{c.about.tag1}</span>
                       <span>★</span>
