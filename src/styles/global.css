@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* ─── Font Fallbacks (minimise font-swap CLS) ───────────────────────── */
+@font-face {
+  font-family: 'Geist Fallback';
+  src: local('Arial');
+  size-adjust: 99.5%;
+  ascent-override: 90%;
+  descent-override: 21%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bricolage Fallback';
+  src: local('Arial Black');
+  size-adjust: 92%;
+  ascent-override: 91%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+
 /* ─── Design Tokens ─────────────────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
@@ -22,8 +40,8 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 14px 40px -12px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 0 1px var(--accent-soft), 0 30px 80px -20px var(--accent-soft);
-  --font-display: 'Bricolage Grotesque', 'Geist', system-ui, sans-serif;
-  --font-body: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Bricolage Fallback', system-ui, sans-serif;
+  --font-body: 'Geist', 'Geist Fallback', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 

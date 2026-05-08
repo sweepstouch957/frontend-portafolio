@@ -1,6 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-
-const useIsomorphicLayout = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { CONTENT, EXPERIENCE, SEED_PROJECTS, type Lang } from '../../lib/content';
 import { Icons } from './Icons';
 
@@ -44,29 +42,25 @@ function Spotlight({ enabled }: { enabled: boolean }) {
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  /* Runs before paint — hides only below-fold elements, never above-fold (LCP safe) */
-  useIsomorphicLayout(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (el.getBoundingClientRect().top >= window.innerHeight * 0.98) {
-      el.classList.add('below-fold');
-    }
-  }, []);
-
-  /* After paint — above-fold: mark visible; below-fold: set up IO */
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (!el.classList.contains('below-fold')) {
-      el.classList.add('in');
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && el.classList.add('in')),
-      { threshold: 0.1 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    /* Single IO fires immediately: isIntersecting=true → above fold, false → below fold.
+       IO gives boundingClientRect without triggering forced layout (computed off-thread). */
+    const initIO = new IntersectionObserver(([entry], obs) => {
+      obs.disconnect();
+      if (entry.isIntersecting || entry.boundingClientRect.top <= 0) {
+        el.classList.add('in');
+      } else {
+        el.classList.add('below-fold');
+        const revealIO = new IntersectionObserver(([e]) => {
+          if (e.isIntersecting) { el.classList.add('in'); revealIO.disconnect(); }
+        }, { threshold: 0.1 });
+        revealIO.observe(el);
+      }
+    }, { threshold: 0 });
+    initIO.observe(el);
+    return () => initIO.disconnect();
   }, []);
 
   return (
